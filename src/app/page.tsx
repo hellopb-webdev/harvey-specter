@@ -1,65 +1,81 @@
 import Image from "next/image";
+import { About } from "./_components/about";
+import { Bio } from "./_components/bio";
+import { Footer } from "./_components/footer";
+import { Nav } from "./_components/nav";
+import { News } from "./_components/news";
+import { PhotoBreak } from "./_components/photo-break";
+import { Services } from "./_components/services";
+import { Testimonials } from "./_components/testimonials";
+import { Work } from "./_components/work";
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
+    <>
+    <section className="relative isolate w-full overflow-hidden h-[100svh] md:h-[847px]">
+      <Image
+        src="/images/hero.png"
+        alt=""
+        fill
+        preload
+        sizes="100vw"
+        className="object-cover object-center"
+      />
+
+      <div
+        aria-hidden
+        className="pointer-events-none absolute bottom-0 left-0 right-0 h-[349px] backdrop-blur-[10px]"
+        style={{
+          maskImage:
+            "linear-gradient(to bottom, transparent 0%, black 45%)",
+          WebkitMaskImage:
+            "linear-gradient(to bottom, transparent 0%, black 45%)",
+        }}
+      />
+
+      <div className="relative flex h-full flex-col px-4 md:px-8">
+        <Nav />
+
+        <div aria-hidden className="flex-1 md:flex-none md:h-[240px]" />
+
+        <div className="flex h-[341px] w-full flex-col items-center justify-between pb-6 md:h-auto md:items-end md:justify-start md:pb-0">
+          <div className="flex w-full flex-col items-start">
+            <p className="px-[18px] font-mono text-sm uppercase leading-[1.1] text-white mix-blend-overlay">
+              [ Hello i&rsquo;m ]
+            </p>
+            <h1 className="-mt-[15px] w-full text-center font-medium uppercase leading-[0.84] tracking-[-0.07em] text-white mix-blend-overlay text-[clamp(60px,21vw,86px)] md:text-[clamp(72px,10.5vw,180px)] md:leading-[1.1] whitespace-pre-wrap md:whitespace-pre">
+              {`Harvey   Specter`}
+            </h1>
+          </div>
+
+          <div className="flex w-[min(294px,100%)] flex-col items-start gap-[17px] md:w-[294px]">
+            <p className="text-[14px] font-bold italic uppercase leading-[1.1] tracking-[-0.04em] text-[#1f1f1f]">
+              H.Studio is a{" "}
+              <span className="font-normal italic">full-service</span> creative
+              studio creating beautiful digital experiences and products. We
+              are an <span className="font-normal italic">award winning</span>{" "}
+              design and art group specializing in branding, web design and
+              engineering.
+            </p>
             <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+              href="#contact"
+              className="inline-flex items-center justify-center rounded-3xl bg-black px-4 py-3 text-sm font-medium tracking-[-0.04em] text-white"
             >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+              Let&rsquo;s talk
+            </a>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+      </div>
+    </section>
+
+    <About />
+    <Bio />
+    <PhotoBreak />
+    <Services />
+    <Work />
+    <Testimonials />
+    <News />
+    <Footer />
+    </>
   );
 }
