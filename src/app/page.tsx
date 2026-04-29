@@ -1,4 +1,7 @@
 import Image from "next/image";
+import { client } from "@/sanity/lib/client";
+import { urlFor } from "@/sanity/lib/image";
+import { FEATURED_PORTFOLIO_QUERY } from "@/sanity/lib/queries";
 import { About } from "./_components/about";
 import { Bio } from "./_components/bio";
 import { Footer } from "./_components/footer";
@@ -7,9 +10,47 @@ import { News } from "./_components/news";
 import { PhotoBreak } from "./_components/photo-break";
 import { Services } from "./_components/services";
 import { Testimonials } from "./_components/testimonials";
-import { Work } from "./_components/work";
+import type { SanityImageSource } from "@sanity/image-url";
+import { Work, type WorkProject } from "./_components/work";
 
-export default function Home() {
+type PortfolioDoc = {
+  _id: string;
+  title: string | null;
+  slug: string | null;
+  coverImage: SanityImageSource | null;
+  coverImagePath: string | null;
+  tags: string[] | null;
+  displaySize: "tall" | "short" | null;
+  summary: string | null;
+  client: string | null;
+  year: number | null;
+  externalUrl: string | null;
+};
+
+export default async function Home() {
+  const portfolio = await client.fetch<PortfolioDoc[]>(
+    FEATURED_PORTFOLIO_QUERY,
+    {},
+    { next: { revalidate: 60, tags: ["portfolio"] } },
+  );
+
+  const projects: WorkProject[] = portfolio
+    .map((p): WorkProject | null => {
+      const image = p.coverImage
+        ? urlFor(p.coverImage).width(1352).height(1488).fit("crop").url()
+        : p.coverImagePath ?? null;
+      if (!image) return null;
+      return {
+        _id: p._id,
+        title: p.title ?? "",
+        image,
+        tags: p.tags ?? [],
+        size: p.displaySize ?? "tall",
+        href: p.externalUrl ?? (p.slug ? `/work/${p.slug}` : undefined),
+      };
+    })
+    .filter((p): p is WorkProject => p !== null);
+
   return (
     <>
     <section className="relative isolate w-full overflow-hidden h-[100svh] md:h-[847px]">
@@ -72,7 +113,7 @@ export default function Home() {
     <Bio />
     <PhotoBreak />
     <Services />
-    <Work />
+    <Work projects={projects} />
     <Testimonials />
     <News />
     <Footer />

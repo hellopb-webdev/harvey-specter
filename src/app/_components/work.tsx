@@ -3,39 +3,14 @@ import Image from "next/image";
 const MONO_LABEL =
   "font-mono text-sm uppercase leading-[1.1] text-[#1f1f1f] whitespace-nowrap";
 
-type Project = {
+export type WorkProject = {
+  _id: string;
   title: string;
   image: string;
   tags: string[];
   size: "tall" | "short";
+  href?: string;
 };
-
-const PROJECTS: Project[] = [
-  {
-    title: "Surfers paradise",
-    image: "/images/project-1.png",
-    tags: ["Social Media", "Photography"],
-    size: "tall",
-  },
-  {
-    title: "Cyberpunk caffe",
-    image: "/images/project-2.png",
-    tags: ["Social Media", "Photography"],
-    size: "short",
-  },
-  {
-    title: "Agency 976",
-    image: "/images/project-3.png",
-    tags: ["Social Media", "Photography"],
-    size: "short",
-  },
-  {
-    title: "Minimal Playground",
-    image: "/images/project-4.png",
-    tags: ["Social Media", "Photography"],
-    size: "tall",
-  },
-];
 
 function ArrowIcon({ className }: { className?: string }) {
   return (
@@ -72,7 +47,7 @@ function Corner({ position }: { position: "tl" | "tr" | "bl" | "br" }) {
   );
 }
 
-function ProjectCard({ project }: { project: Project }) {
+function ProjectCard({ project }: { project: WorkProject }) {
   const aspectClass =
     project.size === "tall"
       ? "aspect-[343/390] lg:aspect-[676/744]"
@@ -133,7 +108,13 @@ function BracketedCTA() {
   );
 }
 
-export function Work() {
+export function Work({ projects }: { projects: WorkProject[] }) {
+  if (!projects.length) return null;
+
+  const count = String(projects.length).padStart(3, "0");
+  const leftColumn = projects.filter((_, i) => i % 2 === 0);
+  const rightColumn = projects.filter((_, i) => i % 2 === 1);
+
   return (
     <section
       id="projects"
@@ -150,7 +131,7 @@ export function Work() {
               <br />
               Work
             </h2>
-            <p className={MONO_LABEL}>004</p>
+            <p className={MONO_LABEL}>{count}</p>
           </div>
 
           {/* Vertical [ portfolio ] label, desktop only */}
@@ -161,21 +142,23 @@ export function Work() {
 
         {/* Projects: single column on mobile, 2-column staggered on desktop */}
         <div className="flex flex-col gap-6 lg:hidden">
-          {PROJECTS.map((p) => (
-            <ProjectCard key={p.title} project={p} />
+          {projects.map((p) => (
+            <ProjectCard key={p._id} project={p} />
           ))}
           <BracketedCTA />
         </div>
 
         <div className="hidden lg:flex lg:items-end lg:gap-6">
           <div className="flex flex-1 flex-col gap-[80px]">
-            <ProjectCard project={PROJECTS[0]} />
-            <ProjectCard project={PROJECTS[1]} />
+            {leftColumn.map((p) => (
+              <ProjectCard key={p._id} project={p} />
+            ))}
             <BracketedCTA />
           </div>
           <div className="flex flex-1 flex-col gap-[117px] pt-[240px]">
-            <ProjectCard project={PROJECTS[2]} />
-            <ProjectCard project={PROJECTS[3]} />
+            {rightColumn.map((p) => (
+              <ProjectCard key={p._id} project={p} />
+            ))}
           </div>
         </div>
       </div>
