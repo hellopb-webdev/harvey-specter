@@ -1,4 +1,7 @@
+"use client";
+
 import Image from "next/image";
+import { useEffect, useRef, useState } from "react";
 
 type Testimonial = {
   author: string;
@@ -89,6 +92,90 @@ function Card({
   );
 }
 
+function MobileSlider({ testimonials }: { testimonials: Testimonial[] }) {
+  const scrollerRef = useRef<HTMLDivElement>(null);
+  const slideRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const [active, setActive] = useState(0);
+
+  useEffect(() => {
+    const root = scrollerRef.current;
+    if (!root) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        let bestIdx = -1;
+        let bestRatio = 0;
+        for (const entry of entries) {
+          if (entry.intersectionRatio > bestRatio) {
+            bestRatio = entry.intersectionRatio;
+            bestIdx = slideRefs.current.indexOf(
+              entry.target as HTMLDivElement,
+            );
+          }
+        }
+        if (bestRatio > 0.5 && bestIdx !== -1) setActive(bestIdx);
+      },
+      { root, threshold: [0.5, 0.75, 1] },
+    );
+
+    slideRefs.current.forEach((el) => el && observer.observe(el));
+    return () => observer.disconnect();
+  }, []);
+
+  const goTo = (idx: number) => {
+    slideRefs.current[idx]?.scrollIntoView({
+      behavior: "smooth",
+      inline: "center",
+      block: "nearest",
+    });
+  };
+
+  return (
+    <div className="flex flex-col gap-8 lg:hidden">
+      <h2 className="text-[clamp(48px,17vw,64px)] font-medium capitalize tracking-[-0.07em] leading-[0.8] text-black">
+        Testimonials
+      </h2>
+      <div
+        ref={scrollerRef}
+        className="-mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-[7.5vw] pb-4 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      >
+        {testimonials.map((t, i) => (
+          <div
+            key={t.author}
+            ref={(el) => {
+              slideRefs.current[i] = el;
+            }}
+            className="flex w-[85vw] max-w-[340px] shrink-0 snap-center items-center justify-center py-4 [scroll-snap-stop:always]"
+          >
+            <Card
+              testimonial={t}
+              style={{ transform: `rotate(${t.mobileRotate})` }}
+            />
+          </div>
+        ))}
+      </div>
+      <div className="flex justify-center gap-2" role="tablist" aria-label="Testimonials">
+        {testimonials.map((t, i) => {
+          const isActive = i === active;
+          return (
+            <button
+              key={t.author}
+              type="button"
+              role="tab"
+              aria-selected={isActive}
+              aria-label={`Show testimonial from ${t.author}`}
+              onClick={() => goTo(i)}
+              className={`size-2 rounded-full transition-[width,background-color] duration-200 ${
+                isActive ? "w-5 bg-black" : "bg-black/25"
+              }`}
+            />
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 export function Testimonials() {
   return (
     <section
@@ -96,22 +183,8 @@ export function Testimonials() {
       className="relative w-full overflow-hidden bg-[#fafafa] px-4 py-16 md:px-8 lg:py-[120px]"
       style={{ ["--card-w" as string]: "260px" }}
     >
-      {/* Mobile: title + horizontal-scroll cards */}
-      <div className="flex flex-col gap-8 lg:hidden">
-        <h2 className="text-[clamp(48px,17vw,64px)] font-medium capitalize tracking-[-0.07em] leading-[0.8] text-black">
-          Testimonials
-        </h2>
-        <div className="-mx-4 flex gap-3 overflow-x-auto px-4 pb-4 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-          {TESTIMONIALS.map((t) => (
-            <Card
-              key={t.author}
-              testimonial={t}
-              className="shrink-0 py-4"
-              style={{ transform: `rotate(${t.mobileRotate})` }}
-            />
-          ))}
-        </div>
-      </div>
+      {/* Mobile: title + snap-scrolling slider with dot indicators */}
+      <MobileSlider testimonials={TESTIMONIALS} />
 
       {/* Desktop: scattered tilted cards behind a giant title */}
       <div

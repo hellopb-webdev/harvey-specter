@@ -1,4 +1,7 @@
+"use client";
+
 import Image from "next/image";
+import { useEffect, useRef, useState } from "react";
 
 type Article = {
   title: string;
@@ -82,27 +85,95 @@ function ArticleCard({
   );
 }
 
+function MobileSlider({ articles }: { articles: Article[] }) {
+  const scrollerRef = useRef<HTMLDivElement>(null);
+  const slideRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const [active, setActive] = useState(0);
+
+  useEffect(() => {
+    const root = scrollerRef.current;
+    if (!root) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        let bestIdx = -1;
+        let bestRatio = 0;
+        for (const entry of entries) {
+          if (entry.intersectionRatio > bestRatio) {
+            bestRatio = entry.intersectionRatio;
+            bestIdx = slideRefs.current.indexOf(
+              entry.target as HTMLDivElement,
+            );
+          }
+        }
+        if (bestRatio > 0.5 && bestIdx !== -1) setActive(bestIdx);
+      },
+      { root, threshold: [0.5, 0.75, 1] },
+    );
+
+    slideRefs.current.forEach((el) => el && observer.observe(el));
+    return () => observer.disconnect();
+  }, []);
+
+  const goTo = (idx: number) => {
+    slideRefs.current[idx]?.scrollIntoView({
+      behavior: "smooth",
+      inline: "center",
+      block: "nearest",
+    });
+  };
+
+  return (
+    <div className="flex flex-col gap-8 lg:hidden">
+      <h2 className="font-light uppercase tracking-[-0.08em] leading-[0.86] text-black text-[clamp(28px,8vw,48px)]">
+        Keep up with my latest news &amp; achievements
+      </h2>
+      <div
+        ref={scrollerRef}
+        className="-mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-[7.5vw] pb-4 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      >
+        {articles.map((a, i) => (
+          <div
+            key={a.title}
+            ref={(el) => {
+              slideRefs.current[i] = el;
+            }}
+            className="flex w-[85vw] max-w-[340px] shrink-0 snap-center items-stretch py-2 [scroll-snap-stop:always]"
+          >
+            <ArticleCard article={a} className="w-full" />
+          </div>
+        ))}
+      </div>
+      <div className="flex justify-center gap-2" role="tablist" aria-label="News articles">
+        {articles.map((a, i) => {
+          const isActive = i === active;
+          return (
+            <button
+              key={a.title}
+              type="button"
+              role="tab"
+              aria-selected={isActive}
+              aria-label={`Show news article: ${a.title}`}
+              onClick={() => goTo(i)}
+              className={`size-2 rounded-full transition-[width,background-color] duration-200 ${
+                isActive ? "w-5 bg-black" : "bg-black/25"
+              }`}
+            />
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 export function News() {
   return (
     <section
       id="news"
       className="w-full bg-[#f3f3f3] px-4 py-16 md:px-8 lg:py-[120px]"
     >
-      {/* Mobile/tablet: title above, horizontal-scroll cards */}
-      <div className="flex flex-col gap-8 lg:hidden">
-        <h2 className="font-light uppercase tracking-[-0.08em] leading-[0.86] text-black text-[clamp(28px,8vw,48px)]">
-          Keep up with my latest news &amp; achievements
-        </h2>
-        <div className="-mx-4 flex gap-4 overflow-x-auto px-4 pb-4 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-          {ARTICLES.map((a) => (
-            <ArticleCard
-              key={a.title}
-              article={a}
-              className="w-[300px] shrink-0"
-            />
-          ))}
-        </div>
-      </div>
+      {/* Mobile/tablet: title above, snap-scrolling slider with dot indicators */}
+      <MobileSlider articles={ARTICLES} />
 
       {/* Desktop: rotated title left, 3 cards right with separator lines */}
       <div className="hidden lg:flex lg:items-end lg:justify-between lg:gap-8">

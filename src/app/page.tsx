@@ -100,7 +100,7 @@ export default async function Home() {
             </p>
             <a
               href="#contact"
-              className="inline-flex items-center justify-center rounded-3xl bg-black px-4 py-3 text-sm font-medium tracking-[-0.04em] text-white"
+              className="inline-flex items-center justify-center rounded-3xl bg-black px-4 py-3 text-sm font-medium tracking-[-0.04em] text-white transition-[transform,box-shadow,background-color] duration-300 ease-out hover:bg-[#1f1f1f] hover:-translate-y-0.5 hover:shadow-[0_12px_28px_-10px_rgba(0,0,0,0.45)] focus-visible:bg-[#1f1f1f] focus-visible:-translate-y-0.5 focus-visible:shadow-[0_12px_28px_-10px_rgba(0,0,0,0.45)] focus-visible:outline-none"
             >
               Let&rsquo;s talk
             </a>
