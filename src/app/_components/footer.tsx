@@ -1,3 +1,5 @@
+import { LetsTalkButton } from "./lets-talk-button";
+
 function CtaBlock() {
   return (
     <div className="flex w-full flex-col items-start gap-3 md:w-[298px]">
@@ -6,12 +8,7 @@ function CtaBlock() {
         <span className="font-black not-italic">project</span>
         <span className="font-light italic"> in mind?</span>
       </p>
-      <a
-        href="#contact"
-        className="inline-flex items-center justify-center rounded-3xl border border-white px-4 py-3 text-[14px] font-medium tracking-[-0.04em] text-white"
-      >
-        Let&rsquo;s talk
-      </a>
+      <LetsTalkButton variant="outline" />
     </div>
   );
 }
@@ -21,10 +18,7 @@ const SOCIAL_LINK_CLASS =
 
 export function Footer() {
   return (
-    <footer
-      id="contact"
-      className="w-full bg-black px-4 pt-12 md:px-8 md:pt-12"
-    >
+    <footer className="w-full bg-black px-4 pt-12 md:px-8 md:pt-12">
       {/* Top section: CTA + social columns + divider */}
       <div className="flex flex-col gap-6 md:gap-12">
         {/* Mobile layout: CTA stacked with 4 social links */}

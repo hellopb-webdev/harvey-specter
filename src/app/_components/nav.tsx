@@ -1,13 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useContactModal } from "./contact-modal";
 
 const LINKS = [
-  { href: "#about", label: "About" },
-  { href: "#services", label: "Services" },
-  { href: "#projects", label: "Projects" },
-  { href: "#news", label: "News" },
-  { href: "#contact", label: "Contact" },
+  { href: "/about", label: "About" },
+  { href: "/services", label: "Services" },
+  { href: "/projects", label: "Projects" },
+  { href: "/#news", label: "News" },
+  { href: "/contact", label: "Contact" },
 ];
 
 const LINK_HOVER =
@@ -30,6 +31,7 @@ const CTA_BUTTON =
 
 export function Nav() {
   const [open, setOpen] = useState(false);
+  const { openModal } = useContactModal();
 
   useEffect(() => {
     if (!open) return;
@@ -49,7 +51,7 @@ export function Nav() {
     <>
       <nav className="flex w-full items-center justify-between py-6">
         <a
-          href="#"
+          href="/"
           className={`text-base font-semibold capitalize tracking-[-0.04em] text-black ${LINK_HOVER}`}
         >
           H.Studio
@@ -65,9 +67,13 @@ export function Nav() {
           ))}
         </ul>
 
-        <a href="#contact" className={`hidden md:inline-flex ${CTA_BUTTON}`}>
+        <button
+          type="button"
+          onClick={openModal}
+          className={`hidden md:inline-flex ${CTA_BUTTON}`}
+        >
           Let&rsquo;s talk
-        </a>
+        </button>
 
         <button
           type="button"
@@ -158,13 +164,16 @@ export function Nav() {
             transitionDelay: open ? `${80 + LINKS.length * 50}ms` : "0ms",
           }}
         >
-          <a
-            href="#contact"
-            onClick={() => setOpen(false)}
+          <button
+            type="button"
+            onClick={() => {
+              setOpen(false);
+              openModal();
+            }}
             className={`w-fit ${CTA_BUTTON}`}
           >
             Let&rsquo;s talk
-          </a>
+          </button>
         </div>
       </div>
     </>
